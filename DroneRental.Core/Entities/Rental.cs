@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DroneRental.Core.Entities
 {
-    internal class Rental
+    public class Rental
     {
         public Guid Id { get; set; }
         public string CustomerName { get; set; } = string.Empty;
