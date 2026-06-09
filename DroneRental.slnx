@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="DroneRental.Api/DroneRental.Api.csproj" />
+  <Project Path="DroneRental.Core/DroneRental.Core.csproj" />
+  <Project Path="DroneRental.Infrastructure/DroneRental.Infrastructure.csproj" />
+</Solution>
