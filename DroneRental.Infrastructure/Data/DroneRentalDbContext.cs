@@ -9,6 +9,7 @@ namespace DroneRental.Infrastructure.Data
         public DroneRentalDbContext(DbContextOptions<DroneRentalDbContext> options) : base(options)
         {
         }
+
         // DbSet represents database tables
         // Property names (Drones, Rentals) are table names in SQLite
         public DbSet<Drone> Drones { get; set; }
@@ -19,13 +20,21 @@ namespace DroneRental.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Set precision for prices
+            // Set precision for price per hour
             modelBuilder.Entity<Drone>()
                 .Property(d => d.PricePerHour)
                 .HasPrecision(18, 2);
+
+            // Set precision for rental total price
             modelBuilder.Entity<Rental>()
-                .Property(r => r.TotalCost)
+                .Property(r => r.TotalPrice)
                 .HasPrecision(18, 2);
+
+            // Configure Drone -> Rental relationships
+            modelBuilder.Entity<Rental>()
+                .HasOne(r => r.Drone)
+                .WithMany(d => d.Rental)
+                .HasForeignKey(r => r.DroneId);
         }
 
 
