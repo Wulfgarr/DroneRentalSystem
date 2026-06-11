@@ -17,7 +17,7 @@ namespace DroneRental.Api.Controllers
         }
 
         // GET(by Id): api/drones/{id} - Get one drone by id
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Drone>> GetDrone(Guid id)
         {
             var drone = await _context.Drones.FindAsync(id);
