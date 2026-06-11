@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DroneRental.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")] // Address will be: api/drones
+    [Route("api/drones")] // Address will be: api/drones
     public class DronesController : ControllerBase
     {
         private readonly DroneRentalDbContext _context;
@@ -17,7 +17,7 @@ namespace DroneRental.Api.Controllers
         }
 
         // GET(by Id): api/drones/{id} - Get one drone by id
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<ActionResult<Drone>> GetDrone(Guid id)
         {
             var drone = await _context.Drones.FindAsync(id);
