@@ -33,7 +33,7 @@ namespace DroneRental.Infrastructure.Data
             // Configure Drone -> Rental relationships
             modelBuilder.Entity<Rental>()
                 .HasOne(r => r.Drone)
-                .WithMany(d => d.Rental)
+                .WithMany(d => d.Rentals)
                 .HasForeignKey(r => r.DroneId);
         }
 

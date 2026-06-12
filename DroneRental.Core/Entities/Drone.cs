@@ -19,7 +19,7 @@ namespace DroneRental.Core.Entities
         public int BatteryLifeMinutes { get; set; }
         public int MaxRangeMeters { get; set; }
         [JsonIgnore]
-        public ICollection<Rental> Rental { get; set; } = new List<Rental>();
+        public ICollection<Rental> Rentals { get; set; } = new List<Rental>();
 
     }
 }
