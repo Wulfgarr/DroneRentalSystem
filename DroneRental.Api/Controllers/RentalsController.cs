@@ -72,21 +72,35 @@ namespace DroneRental.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<RentalResponse>> CreateRental(CreateRentalRequest request)
         {
+            if (request.DroneId == Guid.Empty)
+            {
+                return BadRequest("DroneId is required.");
+            }
+
+            if (request.StartTime == default)
+            {
+                return BadRequest("Start time is required.");
+            }
+
+            if (request.EndTime == default)
+            {
+                return BadRequest("End time is required.");
+            }
+
+            if (request.EndTime <= request.StartTime)
+            {
+                return BadRequest("End time must be later than start time.");
+            }
+
+            if (request.StartTime < DateTime.UtcNow)
+            {
+                return BadRequest("Rental cannot start in the past");
+            }
             var drone = await _context.Drones
                 .FirstOrDefaultAsync(d => d.Id == request.DroneId);
             if (drone == null)
             {
                 return BadRequest("Drone does not exist.");
-            }
-
-            if (request.EndTime <= request.StartTime)
-            {
-                return BadRequest("End time must be later then start time.");
-            }
-
-            if (request.StartTime < DateTime.UtcNow)
-            {
-                return BadRequest("Rental cannot start in the past.");
             }
 
             var hasConflict = await _context.Rentals.AnyAsync(existingRental =>
@@ -96,7 +110,7 @@ namespace DroneRental.Api.Controllers
 
             if (hasConflict)
             {
-                return BadRequest("Drone is already rented in this time peroid.");
+                return BadRequest("Drone is already rented in this time period.");
             }
 
             var rentalDuration = request.EndTime - request.StartTime;
