@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace DroneRental.Core.Entities
 {
@@ -8,6 +9,7 @@ namespace DroneRental.Core.Entities
 
         // Drone object reference
         public Guid DroneId { get; set; }
+        [JsonIgnore]
         public Drone? Drone { get; set; }
 
         public string CustomerName { get; set; } = string.Empty;
