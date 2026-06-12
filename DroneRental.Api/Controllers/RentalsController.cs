@@ -3,6 +3,7 @@ using DroneRental.Core.Entities;
 using DroneRental.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DroneRental.Api.Contracts.Rentals;
 
 namespace DroneRental.Api.Controllers
 {
@@ -20,10 +21,20 @@ namespace DroneRental.Api.Controllers
 
         // GET: api/rentals
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Rental>>> GetRentals()
+        public async Task<ActionResult<IEnumerable<RentalResponse>>> GetRentals()
         {
             var rentals = await _context.Rentals
                 .AsNoTracking()
+                .Select(r => new RentalResponse
+                {
+                    Id = r.Id,
+                    DroneId = r.DroneId,
+                    CustomerName = r.CustomerName,
+                    CustomerEmail = r.CustomerEmail,
+                    StartTime = r.StartTime,
+                    EndTime = r.EndTime,
+                    TotalPrice = r.TotalPrice
+                })
                 .ToListAsync();
 
             return Ok(rentals);
@@ -31,11 +42,22 @@ namespace DroneRental.Api.Controllers
 
         // GET: api/rentals/{id}
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<Rental>> GetRental(Guid id)
+        public async Task<ActionResult<RentalResponse>> GetRental(Guid id)
         {
             var rental = await _context.Rentals
                 .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.Id == id);
+                .Where(r => r.Id == id)
+                .Select(r => new RentalResponse
+                {
+                    Id = r.Id,
+                    DroneId = r.DroneId,
+                    CustomerName = r.CustomerName,
+                    CustomerEmail = r.CustomerEmail,
+                    StartTime = r.StartTime,
+                    EndTime = r.EndTime,
+                    TotalPrice = r.TotalPrice
+                })
+                .FirstOrDefaultAsync();
 
             if (rental == null)
             {
@@ -48,36 +70,36 @@ namespace DroneRental.Api.Controllers
 
         // POST: api/rentals
         [HttpPost]
-        public async Task<ActionResult<Rental>> CreateRental(Rental rental)
+        public async Task<ActionResult<RentalResponse>> CreateRental(CreateRentalRequest request)
         {
             var drone = await _context.Drones
-                .FirstOrDefaultAsync(d => d.Id == rental.DroneId);
+                .FirstOrDefaultAsync(d => d.Id == request.DroneId);
             if (drone == null)
             {
                 return BadRequest("Drone does not exist.");
             }
 
-            if (rental.EndTime <= rental.StartTime)
+            if (request.EndTime <= request.StartTime)
             {
-                return BadRequest("End time must be later then start time");
+                return BadRequest("End time must be later then start time.");
             }
 
-            if (rental.StartTime < DateTime.UtcNow)
+            if (request.StartTime < DateTime.UtcNow)
             {
-                return BadRequest("Rental cannot start in the past");
+                return BadRequest("Rental cannot start in the past.");
             }
 
             var hasConflict = await _context.Rentals.AnyAsync(existingRental =>
-            existingRental.DroneId == rental.DroneId &&
-            rental.StartTime < existingRental.EndTime &&
-            rental.EndTime > existingRental.StartTime);
+            existingRental.DroneId == request.DroneId &&
+            request.StartTime < existingRental.EndTime &&
+            request.EndTime > existingRental.StartTime);
 
             if (hasConflict)
             {
-                return BadRequest("Drone is already rent in this time peroid.");
+                return BadRequest("Drone is already rented in this time peroid.");
             }
 
-            var rentalDuration = rental.EndTime - rental.StartTime;
+            var rentalDuration = request.EndTime - request.StartTime;
             var totalHours = (decimal)rentalDuration.TotalHours;
             var totalPrice = Math.Round(totalHours * drone.PricePerHour, 2);
 
@@ -85,17 +107,27 @@ namespace DroneRental.Api.Controllers
             {
                 Id = Guid.NewGuid(),
                 DroneId = drone.Id,
-                CustomerName = rental.CustomerName,
-                CustomerEmail = rental.CustomerEmail,
-                StartTime = rental.StartTime,
-                EndTime = rental.EndTime,
+                CustomerName = request.CustomerName,
+                CustomerEmail = request.CustomerEmail,
+                StartTime = request.StartTime,
+                EndTime = request.EndTime,
                 TotalPrice = totalPrice
             };
 
             _context.Rentals.Add(newRental);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetRental), new { id = newRental.Id }, newRental);
+            var response = new RentalResponse
+            {
+                Id = newRental.Id,
+                DroneId = newRental.DroneId,
+                CustomerName = newRental.CustomerName,
+                CustomerEmail = newRental.CustomerEmail,
+                StartTime = newRental.StartTime,
+                EndTime = newRental.EndTime,
+                TotalPrice = totalPrice
+            };
+            return CreatedAtAction(nameof(GetRental), new { id = response.Id }, response);
         }
 
         // DELETE: api/rentals/{id}
