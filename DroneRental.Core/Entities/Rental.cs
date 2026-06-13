@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using DroneRental.Core.Enums;
 
 namespace DroneRental.Core.Entities
 {
@@ -19,6 +20,9 @@ namespace DroneRental.Core.Entities
         public DateTime EndTime { get; set; }
 
         public decimal TotalPrice { get; set; }
+
+        public RentalStatus Status { get; set; } = RentalStatus.Active;
+        public DateTime? CancelledAt { get; set; }
 
 
     }

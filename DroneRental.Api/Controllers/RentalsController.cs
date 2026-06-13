@@ -4,6 +4,7 @@ using DroneRental.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DroneRental.Api.Contracts.Rentals;
+using DroneRental.Core.Enums;
 
 namespace DroneRental.Api.Controllers
 {
@@ -33,7 +34,9 @@ namespace DroneRental.Api.Controllers
                     CustomerEmail = r.CustomerEmail,
                     StartTime = r.StartTime,
                     EndTime = r.EndTime,
-                    TotalPrice = r.TotalPrice
+                    TotalPrice = r.TotalPrice,
+                    Status = r.Status.ToString(),
+                    CancelledAt = r.CancelledAt
                 })
                 .ToListAsync();
 
@@ -55,7 +58,9 @@ namespace DroneRental.Api.Controllers
                     CustomerEmail = r.CustomerEmail,
                     StartTime = r.StartTime,
                     EndTime = r.EndTime,
-                    TotalPrice = r.TotalPrice
+                    TotalPrice = r.TotalPrice,
+                    Status = r.Status.ToString(),
+                    CancelledAt = r.CancelledAt
                 })
                 .FirstOrDefaultAsync();
 
@@ -105,6 +110,7 @@ namespace DroneRental.Api.Controllers
 
             var hasConflict = await _context.Rentals.AnyAsync(existingRental =>
             existingRental.DroneId == request.DroneId &&
+            existingRental.Status != RentalStatus.Cancelled &&
             request.StartTime < existingRental.EndTime &&
             request.EndTime > existingRental.StartTime);
 
@@ -125,7 +131,9 @@ namespace DroneRental.Api.Controllers
                 CustomerEmail = request.CustomerEmail,
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
-                TotalPrice = totalPrice
+                TotalPrice = totalPrice,
+                Status = RentalStatus.Active,
+                CancelledAt = null
             };
 
             _context.Rentals.Add(newRental);
@@ -139,9 +147,53 @@ namespace DroneRental.Api.Controllers
                 CustomerEmail = newRental.CustomerEmail,
                 StartTime = newRental.StartTime,
                 EndTime = newRental.EndTime,
-                TotalPrice = totalPrice
+                TotalPrice = newRental.TotalPrice,
+                Status = newRental.Status.ToString(),
+                CancelledAt = newRental.CancelledAt
             };
             return CreatedAtAction(nameof(GetRental), new { id = response.Id }, response);
+        }
+
+        // POST: api/rentals/{id}/cancel
+        [HttpPost("{id:guid}/cancel")]
+        public async Task<ActionResult<RentalResponse>> CancelRental(Guid id)
+        {
+            var rental = await _context.Rentals.FindAsync(id);
+
+            if (rental == null)
+            {
+                return NotFound();
+            }
+
+            if (rental.Status == RentalStatus.Cancelled)
+            {
+                return BadRequest("Rental is already cancelled.");
+            }
+
+            if (rental.Status == RentalStatus.Completed)
+            {
+                return BadRequest("Completed rental cannot be cancelled.");
+            }
+
+            rental.Status = RentalStatus.Cancelled;
+            rental.CancelledAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            var response = new RentalResponse
+            {
+                Id = rental.Id,
+                DroneId = rental.DroneId,
+                CustomerName = rental.CustomerName,
+                CustomerEmail = rental.CustomerEmail,
+                StartTime = rental.StartTime,
+                EndTime = rental.EndTime,
+                TotalPrice = rental.TotalPrice,
+                Status = rental.Status.ToString(),
+                CancelledAt = rental.CancelledAt
+            };
+
+            return Ok(response);
         }
 
         // DELETE: api/rentals/{id}
