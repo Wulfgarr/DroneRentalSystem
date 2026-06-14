@@ -4,6 +4,7 @@ using DroneRental.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DroneRental.Api.Contracts.Rentals;
+using DroneRental.Api.Services.Rentals;
 using DroneRental.Core.Enums;
 
 namespace DroneRental.Api.Controllers
@@ -14,10 +15,14 @@ namespace DroneRental.Api.Controllers
     {
 
         private readonly DroneRentalDbContext _context;
+        private readonly IRentalPricingService _rentalPricingService;
 
-        public RentalsController(DroneRentalDbContext context)
+        public RentalsController(
+            DroneRentalDbContext context,
+            IRentalPricingService rentalPricingService)
         {
             _context = context;
+            _rentalPricingService = rentalPricingService;
         }
 
         // GET: api/rentals
@@ -98,9 +103,10 @@ namespace DroneRental.Api.Controllers
                 return BadRequest("Drone is already rented in this time period.");
             }
 
-            var rentalDuration = request.EndTime - request.StartTime;
-            var totalHours = (decimal)rentalDuration.TotalHours;
-            var totalPrice = Math.Round(totalHours * drone.PricePerHour, 2);
+            var totalPrice = _rentalPricingService.CalculateTotalPrice(
+                request.StartTime,
+                request.EndTime,
+                drone.PricePerHour);
 
             var newRental = new Rental
             {
