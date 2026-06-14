@@ -16,13 +16,16 @@ namespace DroneRental.Api.Controllers
 
         private readonly DroneRentalDbContext _context;
         private readonly IRentalPricingService _rentalPricingService;
+        private readonly IRentalAvailabilityService _rentalAvailabilityService;
 
         public RentalsController(
             DroneRentalDbContext context,
-            IRentalPricingService rentalPricingService)
+            IRentalPricingService rentalPricingService,
+            IRentalAvailabilityService rentalAvailabilityService)
         {
             _context = context;
             _rentalPricingService = rentalPricingService;
+            _rentalAvailabilityService = rentalAvailabilityService;
         }
 
         // GET: api/rentals
@@ -92,11 +95,10 @@ namespace DroneRental.Api.Controllers
                 return BadRequest("Drone does not exist.");
             }
 
-            var hasConflict = await _context.Rentals.AnyAsync(existingRental =>
-            existingRental.DroneId == request.DroneId &&
-            existingRental.Status != RentalStatus.Cancelled &&
-            request.StartTime < existingRental.EndTime &&
-            request.EndTime > existingRental.StartTime);
+            var hasConflict = await _rentalAvailabilityService.HasConflictingRentalAsync(
+                request.DroneId,
+                request.StartTime,
+                request.EndTime);
 
             if (hasConflict)
             {

@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IRentalPricingService, RentalPricingService>();
+builder.Services.AddScoped<IRentalAvailabilityService, RentalAvailabilityService>();
 
 // Registration database in SQLite in .NET system
 builder.Services.AddDbContext<DroneRentalDbContext>(options =>
