@@ -26,21 +26,13 @@ namespace DroneRental.Api.Controllers
         {
             var rentals = await _context.Rentals
                 .AsNoTracking()
-                .Select(r => new RentalResponse
-                {
-                    Id = r.Id,
-                    DroneId = r.DroneId,
-                    CustomerName = r.CustomerName,
-                    CustomerEmail = r.CustomerEmail,
-                    StartTime = r.StartTime,
-                    EndTime = r.EndTime,
-                    TotalPrice = r.TotalPrice,
-                    Status = r.Status.ToString(),
-                    CancelledAt = r.CancelledAt
-                })
                 .ToListAsync();
 
-            return Ok(rentals);
+            var response = rentals
+                .Select(MapToRentalResponse)
+                .ToList();
+
+            return Ok(response);
         }
 
         // GET: api/rentals/{id}
@@ -49,27 +41,14 @@ namespace DroneRental.Api.Controllers
         {
             var rental = await _context.Rentals
                 .AsNoTracking()
-                .Where(r => r.Id == id)
-                .Select(r => new RentalResponse
-                {
-                    Id = r.Id,
-                    DroneId = r.DroneId,
-                    CustomerName = r.CustomerName,
-                    CustomerEmail = r.CustomerEmail,
-                    StartTime = r.StartTime,
-                    EndTime = r.EndTime,
-                    TotalPrice = r.TotalPrice,
-                    Status = r.Status.ToString(),
-                    CancelledAt = r.CancelledAt
-                })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(r => r.Id == id);
 
             if (rental == null)
             {
                 return NotFound();
             }
 
-            return Ok(rental);
+            return Ok(MapToRentalResponse(rental));
 
         }
 
@@ -139,18 +118,8 @@ namespace DroneRental.Api.Controllers
             _context.Rentals.Add(newRental);
             await _context.SaveChangesAsync();
 
-            var response = new RentalResponse
-            {
-                Id = newRental.Id,
-                DroneId = newRental.DroneId,
-                CustomerName = newRental.CustomerName,
-                CustomerEmail = newRental.CustomerEmail,
-                StartTime = newRental.StartTime,
-                EndTime = newRental.EndTime,
-                TotalPrice = newRental.TotalPrice,
-                Status = newRental.Status.ToString(),
-                CancelledAt = newRental.CancelledAt
-            };
+            var response = MapToRentalResponse(newRental);
+
             return CreatedAtAction(nameof(GetRental), new { id = response.Id }, response);
         }
 
@@ -180,18 +149,7 @@ namespace DroneRental.Api.Controllers
 
             await _context.SaveChangesAsync();
 
-            var response = new RentalResponse
-            {
-                Id = rental.Id,
-                DroneId = rental.DroneId,
-                CustomerName = rental.CustomerName,
-                CustomerEmail = rental.CustomerEmail,
-                StartTime = rental.StartTime,
-                EndTime = rental.EndTime,
-                TotalPrice = rental.TotalPrice,
-                Status = rental.Status.ToString(),
-                CancelledAt = rental.CancelledAt
-            };
+            var response = MapToRentalResponse(rental);
 
             return Ok(response);
         }
@@ -211,6 +169,22 @@ namespace DroneRental.Api.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private static RentalResponse MapToRentalResponse(Rental rental)
+        {
+            return new RentalResponse
+            {
+                Id = rental.Id,
+                DroneId = rental.DroneId,
+                CustomerName = rental.CustomerName,
+                CustomerEmail = rental.CustomerEmail,
+                StartTime = rental.StartTime,
+                EndTime = rental.EndTime,
+                TotalPrice = rental.TotalPrice,
+                Status = rental.Status.ToString(),
+                CancelledAt = rental.CancelledAt
+            };
         }
     }
 
