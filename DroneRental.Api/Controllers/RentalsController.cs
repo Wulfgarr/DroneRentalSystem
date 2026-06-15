@@ -32,6 +32,7 @@ namespace DroneRental.Api.Controllers
 
         // GET: api/rentals
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<RentalResponse>>> GetRentals()
         {
             var rentals = await _context.Rentals
@@ -47,6 +48,7 @@ namespace DroneRental.Api.Controllers
 
         // GET: api/rentals/{id}
         [HttpGet("{id:guid}")]
+        [Authorize]
         public async Task<ActionResult<RentalResponse>> GetRental(Guid id)
         {
             var rental = await _context.Rentals
@@ -56,6 +58,20 @@ namespace DroneRental.Api.Controllers
             if (rental == null)
             {
                 return NotFound();
+            }
+
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized("Invalid user token.");
+            }
+
+            var isAdmin = User.IsInRole("Admin");
+
+            if (!isAdmin && rental.UserId != userId)
+            {
+                return Forbid();
             }
 
             return Ok(MapToRentalResponse(rental));
@@ -71,7 +87,7 @@ namespace DroneRental.Api.Controllers
 
             if (!int.TryParse(userIdClaim, out var userId))
             {
-                return Unauthorized("Invalid user token");
+                return Unauthorized("Invalid user token.");
             }
 
             var rentals = await _context.Rentals
@@ -168,6 +184,7 @@ namespace DroneRental.Api.Controllers
 
         // POST: api/rentals/{id}/cancel
         [HttpPost("{id:guid}/cancel")]
+        [Authorize]
         public async Task<ActionResult<RentalResponse>> CancelRental(Guid id)
         {
             var rental = await _context.Rentals.FindAsync(id);
@@ -175,6 +192,20 @@ namespace DroneRental.Api.Controllers
             if (rental == null)
             {
                 return NotFound();
+            }
+
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized("Invalid user token.");
+            }
+
+            var isAdmin = User.IsInRole("Admin");
+
+            if (!isAdmin && rental.UserId != userId)
+            {
+                return Forbid();
             }
 
             if (rental.Status == RentalStatus.Cancelled)
@@ -199,6 +230,7 @@ namespace DroneRental.Api.Controllers
 
         // DELETE: api/rentals/{id}
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteRental(Guid id)
         {
             var rental = await _context.Rentals.FindAsync(id);
