@@ -11,5 +11,6 @@ namespace DroneRental.Core.Entities
         public string LastName { get; set; } = string.Empty;
         public UserRole Role { get; set; } = UserRole.Customer;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public ICollection<Rental> Rentals { get; set; } = new List<Rental>();
     }
 }

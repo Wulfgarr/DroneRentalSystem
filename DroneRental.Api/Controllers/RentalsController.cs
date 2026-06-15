@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using DroneRental.Api.Contracts.Rentals;
 using DroneRental.Api.Services.Rentals;
 using DroneRental.Core.Enums;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DroneRental.Api.Controllers
 {
@@ -62,8 +64,16 @@ namespace DroneRental.Api.Controllers
 
         // POST: api/rentals
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<RentalResponse>> CreateRental(CreateRentalRequest request)
         {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized("Invalid user token.");
+            }
+
             if (request.DroneId == Guid.Empty)
             {
                 return BadRequest("DroneId is required.");
@@ -114,6 +124,7 @@ namespace DroneRental.Api.Controllers
             {
                 Id = Guid.NewGuid(),
                 DroneId = drone.Id,
+                UserId = userId,
                 CustomerName = request.CustomerName,
                 CustomerEmail = request.CustomerEmail,
                 StartTime = request.StartTime,

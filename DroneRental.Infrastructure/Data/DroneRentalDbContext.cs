@@ -42,6 +42,13 @@ namespace DroneRental.Infrastructure.Data
             modelBuilder.Entity<ApplicationUser>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
+
+            // Configure User -> Rental relationship
+            modelBuilder.Entity<Rental>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Rentals)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
 
