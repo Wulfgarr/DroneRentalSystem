@@ -3,6 +3,7 @@ using DroneRental.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DroneRental.Api.Contracts.Drones;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DroneRental.Api.Controllers
 {
@@ -67,6 +68,7 @@ namespace DroneRental.Api.Controllers
 
         // POST: api/drones - Add new drone to database
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<DroneResponse>> CreateDrone(CreateDroneRequest request)
         {
 
@@ -105,6 +107,7 @@ namespace DroneRental.Api.Controllers
 
         // PUT: api/drones/{id}
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateDrone(Guid id, UpdateDroneRequest request)
         {
 
@@ -129,6 +132,7 @@ namespace DroneRental.Api.Controllers
 
         // DELETE: api/drones/{id}
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteDrone(Guid id)
         {
             var drone = await _context.Drones.FindAsync(id);
