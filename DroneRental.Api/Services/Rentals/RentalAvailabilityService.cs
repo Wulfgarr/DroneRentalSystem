@@ -22,7 +22,7 @@ namespace DroneRental.Api.Services.Rentals
             existingRental.DroneId == droneId &&
             existingRental.Status != RentalStatus.Cancelled &&
             startTime < existingRental.EndTime &&
-            endTime > existingRental.EndTime);
+            endTime > existingRental.StartTime);
         }
     }
 }
