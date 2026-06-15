@@ -3,6 +3,7 @@ using System;
 using DroneRental.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DroneRental.Infrastructure.Migrations
 {
     [DbContext(typeof(DroneRentalDbContext))]
-    partial class DroneRentalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260615112637_AddUsersTable")]
+    partial class AddUsersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
@@ -118,14 +121,9 @@ namespace DroneRental.Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DroneId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Rentals");
                 });
@@ -138,19 +136,7 @@ namespace DroneRental.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DroneRental.Core.Entities.ApplicationUser", "User")
-                        .WithMany("Rentals")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("Drone");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DroneRental.Core.Entities.ApplicationUser", b =>
-                {
-                    b.Navigation("Rentals");
                 });
 
             modelBuilder.Entity("DroneRental.Core.Entities.Drone", b =>

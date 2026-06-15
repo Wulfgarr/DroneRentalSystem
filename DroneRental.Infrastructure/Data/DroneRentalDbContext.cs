@@ -14,6 +14,8 @@ namespace DroneRental.Infrastructure.Data
         // Property names (Drones, Rentals) are table names in SQLite
         public DbSet<Drone> Drones { get; set; }
         public DbSet<Rental> Rentals { get; set; }
+        public DbSet<ApplicationUser> Users { get; set; }
+
 
         // Configuration of database columns rules
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -35,6 +37,18 @@ namespace DroneRental.Infrastructure.Data
                 .HasOne(r => r.Drone)
                 .WithMany(d => d.Rentals)
                 .HasForeignKey(r => r.DroneId);
+
+            // Set user email as unique user id
+            modelBuilder.Entity<ApplicationUser>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            // Configure User -> Rental relationship
+            modelBuilder.Entity<Rental>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Rentals)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
 

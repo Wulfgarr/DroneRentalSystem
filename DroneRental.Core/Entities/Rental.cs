@@ -12,6 +12,10 @@ namespace DroneRental.Core.Entities
         public Guid DroneId { get; set; }
         [JsonIgnore]
         public Drone? Drone { get; set; }
+        // User object reference
+        public int? UserId { get; set; }
+        [JsonIgnore]
+        public ApplicationUser? User { get; set; }
 
         public string CustomerName { get; set; } = string.Empty;
         public string CustomerEmail { get; set; } = string.Empty;
