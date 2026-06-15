@@ -62,6 +62,30 @@ namespace DroneRental.Api.Controllers
 
         }
 
+        // GET: api/rentals/my
+        [HttpGet("my")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<RentalResponse>>> GetMyRentals()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized("Invalid user token");
+            }
+
+            var rentals = await _context.Rentals
+                .AsNoTracking()
+                .Where(r => r.UserId == userId)
+                .ToListAsync();
+
+            var response = rentals
+                .Select(MapToRentalResponse)
+                .ToList();
+
+            return Ok(response);
+        }
+
         // POST: api/rentals
         [HttpPost]
         [Authorize]
