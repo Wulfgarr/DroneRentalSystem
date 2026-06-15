@@ -1,6 +1,7 @@
 using DroneRental.Infrastructure.Data;
 using DroneRental.Api.Services.Rentals;
 using Microsoft.EntityFrameworkCore;
+using DroneRental.Api.Services.Auth;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IRentalPricingService, RentalPricingService>();
 builder.Services.AddScoped<IRentalAvailabilityService, RentalAvailabilityService>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 // Registration database in SQLite in .NET system
 builder.Services.AddDbContext<DroneRentalDbContext>(options =>
