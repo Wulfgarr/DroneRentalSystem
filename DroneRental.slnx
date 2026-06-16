@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="DroneRental.Api.Tests/DroneRental.Api.Tests.csproj" Id="6c93d25a-3d16-4eb0-992a-ae51b8232ff1" />
   <Project Path="DroneRental.Api/DroneRental.Api.csproj" />
   <Project Path="DroneRental.Core/DroneRental.Core.csproj" />
   <Project Path="DroneRental.Infrastructure/DroneRental.Infrastructure.csproj" />
