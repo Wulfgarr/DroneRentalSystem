@@ -30,6 +30,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!))
         };
     });
+builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IRentalPricingService, RentalPricingService>();
 builder.Services.AddScoped<IRentalAvailabilityService, RentalAvailabilityService>();
@@ -81,6 +82,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 app.Run();
 
