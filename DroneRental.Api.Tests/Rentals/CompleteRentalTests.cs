@@ -140,6 +140,20 @@ namespace DroneRental.Api.Tests.Rentals
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
+        [Fact]
+        public async Task CompleteRental_WhenUserIsNotAuthenticated_ReturnsUnauthorized()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var rentalId = Guid.NewGuid();
+
+            // Act
+            var response = await client.PostAsync($"/api/rentals/{rentalId}/complete", null);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
         private async Task<(Guid RentalId, string Token)> CreateRentalWithTokenAsync(
             UserRole userRole,
             RentalStatus rentalStatus,
