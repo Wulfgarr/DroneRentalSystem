@@ -33,12 +33,12 @@ namespace DroneRental.Api.Tests.TestInfrastructure
                 services.RemoveAll<DbContextOptions<DroneRentalDbContext>>();
                 services.RemoveAll<DroneRentalDbContext>();
 
-                services.AddSingleton<DbConnection>(container =>
-                {
-                    var connection = new SqliteConnection("DataSource=:memory:");
-                    connection.Open();
-                    return connection;
-                });
+                
+                var connection = new SqliteConnection("DataSource=:memory:");
+                connection.Open();
+
+                services.AddSingleton<DbConnection>(connection);
+                
 
                 services.AddDbContext<DroneRentalDbContext>((container, options) =>
                 {
