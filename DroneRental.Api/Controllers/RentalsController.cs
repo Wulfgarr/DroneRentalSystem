@@ -228,6 +228,37 @@ namespace DroneRental.Api.Controllers
             return Ok(response);
         }
 
+        // POST: api/rentals/{id}/complete
+        [HttpPost("{id:guid}/complete")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<RentalResponse>> CompleteRental(Guid id)
+        {
+            var rental = await _context.Rentals.FindAsync(id);
+
+            if (rental == null)
+            {
+                return NotFound();
+            }
+
+            if (rental.Status == RentalStatus.Completed)
+            {
+                return BadRequest("Rental is already completed.");
+            }
+
+            if (rental.Status == RentalStatus.Cancelled)
+            {
+                return BadRequest("Cancelled rental cannot be completed.");
+            }
+
+            rental.Status = RentalStatus.Completed;
+
+            await _context.SaveChangesAsync();
+
+            var response = MapToRentalResponse(rental);
+
+            return Ok(response);
+        }
+
         // DELETE: api/rentals/{id}
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "Admin")]
