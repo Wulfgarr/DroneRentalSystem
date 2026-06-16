@@ -305,5 +305,40 @@ namespace DroneRental.Api.Tests.Rentals
             }
         }
 
+        [Fact]
+        public async Task CompleteRental_WhenRentalDoesNotExist_ReturnsNotFound()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var jwtTokenService = scope.ServiceProvider.GetRequiredService<IJwtTokenService>();
+
+                var admin = new ApplicationUser
+                {
+                    Id = 999,
+                    Email = "admin-notfound@test.com",
+                    FirstName = "Admin",
+                    LastName = "Test",
+                    PasswordHash = "not-used-in-this-test",
+                    Role = UserRole.Admin
+                };
+
+                var token = jwtTokenService.GenerateToken(admin);
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            var missingRentalId = Guid.NewGuid();
+
+            // Act
+            var response = await client.PostAsync($"/api/rentals/{missingRentalId}/complete", null);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+
     }
 }
