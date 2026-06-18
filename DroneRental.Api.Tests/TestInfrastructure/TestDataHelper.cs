@@ -98,5 +98,14 @@ namespace DroneRental.Api.Tests.TestInfrastructure
 
             return jwtTokenService.GenerateToken(user);
         }
+
+        public async Task<Rental?> GetRentalAsync(Guid rentalId)
+        {
+            using var scope = _factory.Services.CreateScope();
+
+            var dbContext = scope.ServiceProvider.GetRequiredService<DroneRentalDbContext>();
+
+            return await dbContext.Rentals.FindAsync(rentalId);
+        }
     }
 }
