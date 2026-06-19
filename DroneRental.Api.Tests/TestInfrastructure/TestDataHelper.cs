@@ -107,5 +107,29 @@ namespace DroneRental.Api.Tests.TestInfrastructure
 
             return await dbContext.Rentals.FindAsync(rentalId);
         }
+
+        public async Task<string> CreateUserTokenAsync(
+    UserRole userRole,
+    string userEmail)
+        {
+            using var scope = _factory.Services.CreateScope();
+
+            var dbContext = scope.ServiceProvider.GetRequiredService<DroneRentalDbContext>();
+            var jwtTokenService = scope.ServiceProvider.GetRequiredService<IJwtTokenService>();
+
+            var user = new ApplicationUser
+            {
+                Email = userEmail,
+                FirstName = "Test",
+                LastName = "User",
+                PasswordHash = "not-used-in-this-test",
+                Role = userRole
+            };
+
+            dbContext.Users.Add(user);
+            await dbContext.SaveChangesAsync();
+
+            return jwtTokenService.GenerateToken(user);
+        }
     }
 }
