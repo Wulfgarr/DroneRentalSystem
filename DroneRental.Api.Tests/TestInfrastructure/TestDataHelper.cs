@@ -131,5 +131,57 @@ namespace DroneRental.Api.Tests.TestInfrastructure
 
             return jwtTokenService.GenerateToken(user);
         }
+
+        public async Task<Guid> CreateDroneAsync()
+        {
+            using var scope = _factory.Services.CreateScope();
+
+            var dbContext = scope.ServiceProvider.GetRequiredService<DroneRentalDbContext>();
+
+            var drone = new Drone
+            {
+                Id = Guid.NewGuid(),
+                Brand = "DJI",
+                Model = "Mini 4 Pro",
+                PricePerHour = 100,
+                BatteryLifeMinutes = 45,
+                MaxRangeMeters = 10000
+            };
+
+            dbContext.Drones.Add(drone);
+            await dbContext.SaveChangesAsync();
+
+            return drone.Id;
+        }
+
+        public async Task<Guid> CreateRentalForDroneAsync(
+    Guid droneId,
+    RentalStatus rentalStatus,
+    DateTime startTime,
+    DateTime endTime,
+    DateTime? cancelledAt = null)
+        {
+            using var scope = _factory.Services.CreateScope();
+
+            var dbContext = scope.ServiceProvider.GetRequiredService<DroneRentalDbContext>();
+
+            var rental = new Rental
+            {
+                Id = Guid.NewGuid(),
+                DroneId = droneId,
+                CustomerName = "Existing Customer",
+                CustomerEmail = "existing-customer@test.com",
+                StartTime = startTime,
+                EndTime = endTime,
+                TotalPrice = 100,
+                Status = rentalStatus,
+                CancelledAt = cancelledAt
+            };
+
+            dbContext.Rentals.Add(rental);
+            await dbContext.SaveChangesAsync();
+
+            return rental.Id;
+        }
     }
 }
