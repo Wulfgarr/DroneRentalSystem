@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using DroneRental.Api.Contracts.Rentals;
 using DroneRental.Api.Services.Rentals;
 using DroneRental.Core.Enums;
+using DroneRental.Api.Contracts.Common;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
@@ -33,15 +34,67 @@ namespace DroneRental.Api.Controllers
         // GET: api/rentals
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<RentalResponse>>> GetRentals()
+        public async Task<ActionResult<PaginatedResponse<RentalResponse>>> GetRentals(
+            [FromQuery] GetRentalsQuery query)
         {
-            var rentals = await _context.Rentals
+            if (query.Page < 1)
+            {
+                return BadRequest("Page must be greater than or equal to 1.");
+            }
+
+            if (query.PageSize < 1)
+            {
+                return BadRequest("PageSize must be greater than or equal to 1.");
+            }
+
+            if (query.PageSize > 100)
+            {
+                return BadRequest("PageSize cannot be greater than 100");
+            }
+
+            var rentalsQuery = _context.Rentals
                 .AsNoTracking()
+                .AsQueryable();
+
+            if (query.Status.HasValue)
+            {
+                rentalsQuery = rentalsQuery
+                    .Where(r => r.Status == query.Status.Value);
+            }
+
+            if (query.DroneId.HasValue)
+            {
+                rentalsQuery = rentalsQuery
+                    .Where(r => r.DroneId == query.DroneId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.CustomerEmail))
+            {
+                var customerEmail = query.CustomerEmail.Trim().ToLower();
+
+                rentalsQuery = rentalsQuery
+                    .Where(r => r.CustomerEmail.ToLower() == customerEmail);
+            }
+
+            var totalCount = await rentalsQuery.CountAsync();
+
+            var rentals = await rentalsQuery
+                .OrderBy(r => r.StartTime)
+                .ThenBy(r => r.Id)
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize)
                 .ToListAsync();
 
-            var response = rentals
-                .Select(MapToRentalResponse)
-                .ToList();
+            var response = new PaginatedResponse<RentalResponse>
+            {
+                Items = rentals
+                    .Select(MapToRentalResponse)
+                    .ToList(),
+                TotalCount = totalCount,
+                Page = query.Page,
+                PageSize = query.PageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize)
+            };
 
             return Ok(response);
         }

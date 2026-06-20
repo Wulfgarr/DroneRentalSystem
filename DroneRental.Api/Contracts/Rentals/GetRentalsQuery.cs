@@ -4,7 +4,7 @@ namespace DroneRental.Api.Contracts.Rentals
 {
     public class GetRentalsQuery
     {
-        public RentalStatus? status {  get; set; }
+        public RentalStatus? Status {  get; set; }
         
         public Guid? DroneId { get; set; }
 
