@@ -2,6 +2,7 @@ using DroneRental.Infrastructure.Data;
 using DroneRental.Api.Services.Rentals;
 using Microsoft.EntityFrameworkCore;
 using DroneRental.Api.Services.Auth;
+using DroneRental.Api.Data;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -20,7 +21,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(FrontendCorsPolicy, policy =>
     {
         policy
-            .WithOrigins()
+            .WithOrigins("http://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -94,8 +95,12 @@ if (app.Environment.IsDevelopment())
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Drone Rental API v1");
     });
+
+    await DevelopmentDataSeeder.SeedAsync(app.Services);
 }
 app.UseHttpsRedirection();
+
+app.UseCors(FrontendCorsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
