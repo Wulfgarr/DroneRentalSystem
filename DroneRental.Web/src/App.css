@@ -1,0 +1,29 @@
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.app h1{
+  margin-bottom: 0.5rem;
+}
+
+.error {
+  color: #b91c1c;
+}
+
+.drone-list {
+  display: grid;
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.drone-card {
+  padding: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+}
+
+.drone-card h3 {margin-top: 0;}
