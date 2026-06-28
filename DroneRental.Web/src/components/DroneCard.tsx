@@ -6,7 +6,7 @@ type Props = {
 
 export function DroneCard({ drone }: Props) {
     return (
-        <li key={drone.id} className="drone-card">
+        <li className="drone-card">
             <h3>{drone.brand} {drone.model}</h3>
             <p>Price per hour: {drone.pricePerHour}</p>
             <p>Available: {drone.isAvailable ? 'Yes' : 'No'}</p>
