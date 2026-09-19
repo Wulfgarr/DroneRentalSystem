@@ -23,13 +23,31 @@ export function DronesPage() {
         load();
     }, []);
 
-    if (isLoading) return <p>Loading...</p>
-    if (errorMessage) return <p className='error'>{errorMessage}</p>
+    if (isLoading) {
+            return (
+            <p className="page-message">
+                Loading drones...
+            </p>
+            );
+    }
+    if (errorMessage) {
+        return (
+        <p className="page-message error">
+            {errorMessage}
+        </p>
+        );
+    }
+    if (drones.length === 0) {
+        return <p className="page-message">No drones found.</p>;
+    }
     
     return (
         <ul className="drone-list">
-            {drones.map(d => (
-                <DroneCard key={d.id} drone={d}/>
+            {drones.map(drone => (
+                <DroneCard
+                key={drone.id}
+                drone={drone}
+                />
             ))}
         </ul>
     );

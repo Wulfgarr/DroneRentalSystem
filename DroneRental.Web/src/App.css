@@ -4,8 +4,12 @@
   padding: 2rem;
 }
 
-.app h1{
+.app h1 {
   margin-bottom: 0.5rem;
+}
+
+.page-message {
+  padding: 1rem 0;
 }
 
 .error {
@@ -14,16 +18,45 @@
 
 .drone-list {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1rem;
   padding: 0;
   list-style: none;
 }
 
 .drone-card {
-  padding: 1rem;
+  padding: 1.25rem;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   background: white;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
 }
 
-.drone-card h3 {margin-top: 0;}
+.drone-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.availability {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.availability--available {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.availability--unavailable {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+@media (max-width: 600px) {
+  .app {
+    padding: 1rem;
+  }
+}
