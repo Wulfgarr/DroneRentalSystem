@@ -3,6 +3,7 @@ import './App.css';
 import { AppLayout } from './components/AppLayout';
 import { DronesPage } from './pages/DronesPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { DroneDetailsPage } from "./pages/DroneDetailsPage";
 
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
       <Route element={<AppLayout />}>
         <Route path="/" element={<Navigate to="/drones" replace />} />
         <Route path="/drones" element={<DronesPage />} />
+        <Route path="/drones/:id" element={<DroneDetailsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
