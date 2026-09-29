@@ -4,10 +4,6 @@
   padding: 2rem;
 }
 
-.app h1 {
-  margin-bottom: 0.5rem;
-}
-
 .page-message {
   padding: 1rem 0;
 }
@@ -55,8 +51,69 @@
   color: #991b1b;
 }
 
+.app-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.app-brand {
+  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.app-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.nav-link {
+  display: inline-block;
+  padding: 0.625rem 1rem;
+  border-radius: 6px;
+  color: #374151;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  background: #e5e7eb;
+}
+
+.nav-link--active {
+  background: #dbeafe;
+  color: #1e40af;
+  font-weight: 600;
+}
+
+.app-account {
+  margin-left: auto;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.app-content {
+  padding-top: 1.5rem;
+}
+
+.app a:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+
 @media (max-width: 600px) {
   .app {
     padding: 1rem;
+  }
+
+  .app.nav {
+    order: 3;
+    width: 100%;
   }
 }
