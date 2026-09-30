@@ -10,7 +10,7 @@ export function AppLayout() {
 
                 <nav className="app-nav" aria-label="Main navigation">
                     <NavLink
-                        to="drones"
+                        to="/drones"
                         className={({ isActive}) =>
                         isActive ? 'nav-link nav-link--active' : 'nav-link'
                         }
