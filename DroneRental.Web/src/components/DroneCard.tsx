@@ -1,4 +1,5 @@
 import type { Drone } from '../types/drone';
+import { Link } from 'react-router-dom';
 
 type Props = {
     drone: Drone;
@@ -32,6 +33,10 @@ export function DroneCard({ drone }: Props) {
 
             <p>Battery life: {drone.batteryLifeMinutes} min</p>
             <p>Max range: {formattedRange} m</p>
+
+            <Link to={`/drones/${drone.id}`}>
+                View details
+            </Link>
         </li>
     );
 }
