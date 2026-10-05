@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { SubmitEvent } from 'react';
 import { login } from '../api/authApi';
 import { ApiError } from '../api/client';
+import { Link } from 'react-router-dom';
 
 export function LoginPage() {
     // Stores current state of the form fields.
@@ -43,7 +44,7 @@ export function LoginPage() {
             // Unblock form either success or fail attempt.
             setIsSubmitting(false);
         }
-        
+
     }
 
     return (
@@ -83,7 +84,7 @@ export function LoginPage() {
                 <button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? 'Logging in...' : 'Log in'}
                 </button>
-                
+
                 {error && (
                     <p className="page-message error" role="alert">
                         {error}
@@ -96,6 +97,11 @@ export function LoginPage() {
                     </p>
                 )}
             </form>
+
+            <p>
+                Don't have an account? <Link to="/register">Create an account</Link>
+            </p>
+
         </section>
     );
 }

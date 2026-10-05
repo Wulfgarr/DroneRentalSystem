@@ -5,6 +5,7 @@ import { DronesPage } from './pages/DronesPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { DroneDetailsPage } from "./pages/DroneDetailsPage";
 import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from './pages/RegisterPage';
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/drones" element={<DronesPage />} />
         <Route path="/drones/:id" element={<DroneDetailsPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
