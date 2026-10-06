@@ -9,7 +9,7 @@ export function LoginPage() {
     // Stores current state of the form fields.
     const { startSession } = useAuth();
     const navigate = useNavigate();
-    
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,7 +32,7 @@ export function LoginPage() {
                 email: email.trim(),
                 password: password,
             });
-            
+
             startSession(data);
 
             setPassword('');

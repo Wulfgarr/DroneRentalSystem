@@ -27,7 +27,7 @@ export function AppLayout() {
                 <div className="app-account">
                     {session ? (
                         <>
-                            <span>{session.email}</span>
+                            <Link to="/account">{session.email}</Link>
                             <button type="button" onClick={endSession}>
                                 Log out
                             </button>

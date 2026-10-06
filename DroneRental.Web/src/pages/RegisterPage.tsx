@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, replace, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { SubmitEvent } from 'react';
 import { register } from '../api/authApi';
 import { ApiError } from '../api/client';

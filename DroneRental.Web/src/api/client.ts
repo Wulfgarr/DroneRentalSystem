@@ -13,7 +13,7 @@ export class ApiError extends Error {
 async function readErrorMessage(response: Response): Promise<string> {
     const fallback = `Request failed (HTTP ${response.status}).`;
 
-    // Przy błędach serwera pokazujemy ogólny komunikat. Error general message due the server error.
+    // Error general message due the server error.
     if (response.status >= 500) {
         return 'The server encountered a problem. Please try again later.';
     }
@@ -81,8 +81,19 @@ async function readErrorMessage(response: Response): Promise<string> {
     }
 }
 
-export async function apiGet<T>(url: string): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${url}`);
+export async function apiGet<T>(
+    url: string,
+    token?: string
+): Promise<T> {
+    const headers = new Headers();
+
+    if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    const response = await fetch(`${API_BASE_URL}${url}`, {
+        headers,
+    });
 
     if (!response.ok) {
         const message = await readErrorMessage(response);
@@ -94,13 +105,20 @@ export async function apiGet<T>(url: string): Promise<T> {
 
 export async function apiPost<TResponse, TRequest>(
     url: string,
-    data: TRequest
+    data: TRequest,
+    token?: string
 ): Promise<TResponse> {
+    const headers = new Headers({
+        'Content-Type' : 'application/json',
+    });
+
+    if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+    }
+
     const response = await fetch(`${API_BASE_URL}${url}`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify(data),
     });
 
