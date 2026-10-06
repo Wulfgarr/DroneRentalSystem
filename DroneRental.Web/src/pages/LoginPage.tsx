@@ -2,15 +2,18 @@ import { useState } from 'react';
 import type { SubmitEvent } from 'react';
 import { login } from '../api/authApi';
 import { ApiError } from '../api/client';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from "../auth/useAuth";
 
 export function LoginPage() {
     // Stores current state of the form fields.
+    const { startSession } = useAuth();
+    const navigate = useNavigate();
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         //  Form handled in REACT without a page reload.
@@ -23,17 +26,17 @@ export function LoginPage() {
         // We are starting a new attempt and clearing previous messages.
         setIsSubmitting(true);
         setError(null);
-        setSuccessMessage(null);
 
         try {
-            await login({
+            const data = await login({
                 email: email.trim(),
                 password: password,
             });
+            
+            startSession(data);
 
-            // Testing connection with API
-            setSuccessMessage('Credentials verified successfully.');
             setPassword('');
+            navigate('/drones', {replace: true})
         } catch (error: unknown) {
             if (error instanceof ApiError) {
                 setError(error.message);
@@ -91,11 +94,6 @@ export function LoginPage() {
                     </p>
                 )}
 
-                {successMessage && (
-                    <p className="page-message" role="status">
-                        {successMessage}
-                    </p>
-                )}
             </form>
 
             <p>

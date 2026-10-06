@@ -1,6 +1,10 @@
-import { Link, NavLink, Outlet} from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
+import { useAuth } from "../auth/useAuth";
 
 export function AppLayout() {
+
+    const { session, endSession } = useAuth();
+
     return (
         <div className="app">
             <header className="app-header">
@@ -11,8 +15,8 @@ export function AppLayout() {
                 <nav className="app-nav" aria-label="Main navigation">
                     <NavLink
                         to="/drones"
-                        className={({ isActive}) =>
-                        isActive ? 'nav-link nav-link--active' : 'nav-link'
+                        className={({ isActive }) =>
+                            isActive ? 'nav-link nav-link--active' : 'nav-link'
                         }
                     >
                         Drones
@@ -21,14 +25,23 @@ export function AppLayout() {
 
                 {/* TODO: Connect with logged in user status*/}
                 <div className="app-account">
-                    <span>Guest</span>
+                    {session ? (
+                        <>
+                            <span>{session.email}</span>
+                            <button type="button" onClick={endSession}>
+                                Log out
+                            </button>
+                        </>
+                    ) : (
+                        <Link to="/login">Log in</Link>
+                    )}
                 </div>
             </header>
 
             <main className="app-content">
-                <Outlet/>
+                <Outlet />
             </main>
 
-        </div>    
+        </div>
     );
 }

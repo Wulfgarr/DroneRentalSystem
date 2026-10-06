@@ -1,17 +1,19 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, replace, useNavigate } from 'react-router-dom';
 import type { SubmitEvent } from 'react';
 import { register } from '../api/authApi';
 import { ApiError } from '../api/client';
+import { useAuth } from "../auth/useAuth";
 
 export function RegisterPage() {
+    const { startSession } = useAuth();
+    const navigate = useNavigate();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -22,7 +24,6 @@ export function RegisterPage() {
         }
 
         setError(null);
-        setSuccessMessage(null);
 
         // firstname and lastname whitespace validation
         if (!firstName.trim() || !lastName.trim()) {
@@ -33,15 +34,16 @@ export function RegisterPage() {
         setIsSubmitting(true);
 
         try {
-            await register({
+            const data = await register({
                 firstName: firstName.trim(),
                 lastName: lastName.trim(),
                 email: email.trim(),
                 password: password,
             });
 
-            setSuccessMessage('Account created successfully. You can now log in.');
+            startSession(data);
             setPassword('');
+            navigate('/drones',{ replace: true});
         } catch (error: unknown) {
             if (error instanceof ApiError) {
                 setError(error.message);
@@ -129,12 +131,6 @@ export function RegisterPage() {
                 {error && (
                     <p className="page-message error" role="alert">
                         {error}
-                    </p>
-                )}
-
-                {successMessage && (
-                    <p className="page-message" role="status">
-                        {successMessage}
                     </p>
                 )}
 
